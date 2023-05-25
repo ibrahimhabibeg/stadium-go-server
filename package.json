@@ -4,11 +4,15 @@
     "graphql": "^16.6.0"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "4.0.0",
     "@types/node": "^20.2.3",
     "nodemon": "^2.0.22",
     "ts-node": "^10.9.1",
     "typedoc": "^0.24.7",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "@graphql-codegen/typescript-resolvers": "4.0.0",
+    "@graphql-codegen/typescript": "4.0.0",
+    "@graphql-codegen/introspection": "4.0.0"
   },
   "name": "stadium-server",
   "version": "1.0.0",
@@ -17,7 +21,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "tsc",
     "dev": "nodemon src/index.ts",
-    "doc": "typedoc"
+    "docs": "typedoc",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "author": "",
   "license": "ISC",
