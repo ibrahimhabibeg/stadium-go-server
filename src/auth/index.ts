@@ -96,7 +96,7 @@ export const ownerSignupResolver: Resolver<
  * @param root - result of upper resolver
  * @param args - contains email and password
  * @param context - shared context containing instance of PrismaClient
- * @returns JWT and Owner or AuthError in case of invalid signupData
+ * @returns JWT and User or AuthError in case of invalid signupData
  */
 export const userLoginResolver: Resolver<
   ResolverTypeWrapper<AuthError | UserAuthPayload>,
@@ -113,5 +113,31 @@ export const userLoginResolver: Resolver<
     __typename: "UserAuthPayload",
     token,
     user: { __typename: "User", ...user },
+  };
+};
+
+/**
+ * Login the owner
+ * @async
+ * @param root - result of upper resolver
+ * @param args - contains email and password
+ * @param context - shared context containing instance of PrismaClient
+ * @returns JWT and Owner or AuthError in case of invalid signupData
+ */
+export const ownerLoginResolver: Resolver<
+  ResolverTypeWrapper<AuthError | OwnerAuthPayload>,
+  {},
+  BaseContext,
+  RequireFields<MutationUserLoginArgs, "email" | "password">
+> = async (root, { email, password }, { prisma }) => {
+  const owner = await prisma.owner.findUnique({ where: { email } });
+  if (!owner) return emailNotExists;
+  const isValid = bcrypt.compareSync(password, owner.password);
+  if (!isValid) return incorrectPassword;
+  const token = jwt.sign(String(owner.id), JWT_SECRET);
+  return {
+    __typename: "OwnerAuthPayload",
+    token,
+    owner: { __typename: "Owner", ...owner },
   };
 };

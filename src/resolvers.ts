@@ -3,6 +3,7 @@ import {
   userSignupResolver,
   ownerSignupResolver,
   userLoginResolver,
+  ownerLoginResolver,
 } from "./auth";
 
 const resolvers: Resolvers = {
@@ -13,6 +14,7 @@ const resolvers: Resolvers = {
     userSignup: userSignupResolver,
     ownerSignup: ownerSignupResolver,
     userLogin: userLoginResolver,
+    ownerLogin: ownerLoginResolver
   },
   AuthError: {
     __isTypeOf: (root) => root.__typename === "AuthError",
