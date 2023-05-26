@@ -1,5 +1,5 @@
 import { Resolvers } from "./types/graphql";
-import { userSignupResolver } from "./auth";
+import { userSignupResolver, ownerSignupResolver } from "./auth";
 
 const resolvers: Resolvers = {
   Query: {
@@ -7,6 +7,7 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     userSignup: userSignupResolver,
+    ownerSignup: ownerSignupResolver,
   },
   AuthError: {
     __isTypeOf: (root) => root.__typename === "AuthError",

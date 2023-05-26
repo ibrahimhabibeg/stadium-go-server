@@ -9,7 +9,8 @@ import {
 } from "./errors";
 
 /**
- * Ensures username and email are not duplicated, and ensures all signup data fit requirments.
+ * @description Ensures username and email are not duplicated in user table, and ensures all signup data fit user data requirments.
+ * @async
  * @param email
  * @param username
  * @param password
@@ -28,6 +29,59 @@ export const userSignupDataError = async (
     where: { username },
   });
   if (repeatedUsernameUser) return usernameAlreadyTakenError;
+  const requirmentsError = signupDataRequirmentsError(
+    username,
+    email,
+    password
+  );
+  if (requirmentsError) return requirmentsError;
+  return null;
+};
+
+/**
+ * @description Ensures username and email are not duplicated in owners table, and ensures all signup data fit owner data requirments.
+ * @async
+ * @param email
+ * @param username
+ * @param password
+ * @param prisma
+ * @returns AuthError if there a reguirment is not validated
+ */
+export const ownerSignupDataError = async (
+  email: string,
+  username: string,
+  password: string,
+  prisma: PrismaClient
+): Promise<AuthError> => {
+  const repeatedEmailOwner = await prisma.owner.findUnique({
+    where: { email },
+  });
+  if (repeatedEmailOwner) return emailAlreadyTakenError;
+  const repeatedUsernameOwner = await prisma.owner.findUnique({
+    where: { username },
+  });
+  if (repeatedUsernameOwner) return usernameAlreadyTakenError;
+  const requirmentsError = signupDataRequirmentsError(
+    username,
+    email,
+    password
+  );
+  if (requirmentsError) return requirmentsError;
+  return null;
+};
+
+/**
+ * Checks all signup data field for requirments errors. This doesn't include requirments related to DB.
+ * @param username
+ * @param email
+ * @param password
+ * @returns
+ */
+const signupDataRequirmentsError = (
+  username: string,
+  email: string,
+  password: string
+): AuthError => {
   const passwordError = passwordRequirmentsError(password);
   if (passwordError) return passwordError;
   const usernameError = usernameRequirmentsError(username);
