@@ -15,11 +15,12 @@ const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
 const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
- * Creates new user in DB if input data is valid.
- * @param root
- * @param { email, password, username }
- * @param { prisma }
- * @returns JWT and the new user or AuthError in case of invalid input data
+ * Creates new user in DB if input data is valid
+ * @async
+ * @param root - result of upper resolver
+ * @param signupData - contains username, email, and password
+ * @param context - shared context containing instance of PrismaClient
+ * @returns JWT and User or AuthError in case of invalid signupData
  */
 export const userSignupResolver: Resolver<
   ResolverTypeWrapper<AuthError | UserAuthPayload>
@@ -53,6 +54,14 @@ export const userSignupResolver: Resolver<
   };
 };
 
+/**
+ * Creates new owner in DB if input data is valid
+ * @async
+ * @param root - result of upper resolver
+ * @param signupData - contains username, email, and password
+ * @param context - shared context containing instance of PrismaClient
+ * @returns JWT and Owner or AuthError in case of invalid signupData
+ */
 export const ownerSignupResolver: Resolver<
   ResolverTypeWrapper<AuthError | OwnerAuthPayload>
 > = async (
