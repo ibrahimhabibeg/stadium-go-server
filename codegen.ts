@@ -7,7 +7,12 @@ const config: CodegenConfig = {
   emitLegacyCommonJSImports: false,
   generates: {
     "src/types/graphql.ts": {
-      plugins: ["typescript", "typescript-resolvers"]
+      plugins: ["typescript", "typescript-resolvers"],
+      config: {
+        scalars: {
+          ID: "number | string"
+        }
+      }
     },
     "./graphql.schema.json": {
       plugins: ["introspection"]

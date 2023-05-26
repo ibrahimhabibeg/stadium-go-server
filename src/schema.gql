@@ -53,7 +53,7 @@ type AuthError implements BaseError {
   The field that the error is related to.
   Ex: PASSWORD when chosen password is too short
   """
-  authField: AuthField!
+  errorField: AuthField!
 }
 union UserAuthResult = UserAuthPayload | AuthError
 union OwnerAuthResult = OwnerAuthPayload | AuthError

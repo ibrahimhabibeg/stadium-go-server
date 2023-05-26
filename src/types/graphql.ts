@@ -9,7 +9,7 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string | number; output: string; }
+  ID: { input: number | string; output: number | string; }
   String: { input: string; output: string; }
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
@@ -24,7 +24,7 @@ export type AuthError = BaseError & {
    * The field that the error is related to.
    * Ex: PASSWORD when chosen password is too short
    */
-  authField: AuthField;
+  errorField: AuthField;
   /** English message indicating the error for the client. */
   message: Scalars['String']['output'];
 };
@@ -230,7 +230,7 @@ export type ResolversParentTypes = {
 
 export type AuthErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthError'] = ResolversParentTypes['AuthError']> = {
   arbMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  authField?: Resolver<ResolversTypes['AuthField'], ParentType, ContextType>;
+  errorField?: Resolver<ResolversTypes['AuthField'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

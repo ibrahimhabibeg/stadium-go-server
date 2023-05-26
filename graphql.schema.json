@@ -30,7 +30,7 @@
             "deprecationReason": null
           },
           {
-            "name": "authField",
+            "name": "errorField",
             "description": "The field that the error is related to.\nEx: PASSWORD when chosen password is too short",
             "args": [],
             "type": {
