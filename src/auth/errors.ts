@@ -34,3 +34,17 @@ export const invalidEmailError: AuthError = {
   arbMessage: "بريد إلكتروني خاطئ",
   errorField: AuthField.Email,
 };
+
+export const emailNotExists: AuthError = {
+  __typename: "AuthError",
+  message: "Email isn't registered.",
+  arbMessage: "البريد الإلكتروني غير مسجل",
+  errorField: AuthField.Email,
+};
+
+export const incorrectPassword: AuthError = {
+  __typename: "AuthError",
+  message: "Incorrect password.",
+  arbMessage: "كلمة سر خاطئة",
+  errorField: AuthField.Password,
+};
