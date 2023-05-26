@@ -1,3 +1,64 @@
 type Query{
   helloWorld: String
 }
+type Mutation {
+  userLogin(email: String!, password: String!): UserAuthResult!
+  ownerLogin(email: String!, password: String!): OwnerAuthResult!
+  userSignup(signupData: SignupInput!): UserAuthResult!
+  ownerSignup(signupData: SignupInput!): OwnerAuthResult!
+}
+type User {
+  id: ID!
+  username: String!
+  email: String!
+}
+type Owner {
+  id: ID!
+  username: String!
+  email: String!
+}
+type UserAuthPayload {
+  """
+  JWT used for later user authentication.
+  """
+  token: String!
+  user: User!
+}
+type OwnerAuthPayload {
+  """
+  JWT used for later owner authentication.
+  """
+  token: String!
+  owner: Owner!
+}
+input SignupInput {
+  email: String!
+  username: String!
+  password: String!
+}
+interface BaseError {
+  message: String!
+  arbMessage: String!
+}
+type AuthError implements BaseError {
+  """
+  English message indicating the error for the client.
+  """
+  message: String!
+  """
+  Arabic message indicating the error for the client.
+  """
+  arbMessage: String!
+  """
+  The field that the error is related to.
+  Ex: PASSWORD when chosen password is too short
+  """
+  authField: AuthField!
+}
+union UserAuthResult = UserAuthPayload | AuthError
+union OwnerAuthResult = OwnerAuthPayload | AuthError
+enum AuthField {
+  USERNAME
+  PASSWORD
+  EMAIL
+}

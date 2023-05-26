@@ -20,11 +20,11 @@ const server = new ApolloServer<BaseContext>({
   resolvers,
 });
 
-const { url } = await startStandaloneServer(server, { 
-  listen: { 
-    port: 4000
-   },
-   context: async ({ req, res }) => ({
+const { url } = await startStandaloneServer(server, {
+  listen: {
+    port: 4000,
+  },
+  context: async ({ req, res }) => ({
     prisma: prisma,
   }),
 });
