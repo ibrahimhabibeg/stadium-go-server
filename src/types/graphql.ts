@@ -40,12 +40,24 @@ export type BaseError = {
   message: Scalars['String']['output'];
 };
 
+export type Location = {
+  __typename?: 'Location';
+  latitude: Scalars['Int']['output'];
+  longitude: Scalars['Int']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  createStadium: CreateStadiumResult;
   ownerLogin: OwnerAuthResult;
   ownerSignup: OwnerAuthResult;
   userLogin: UserAuthResult;
   userSignup: UserAuthResult;
+};
+
+
+export type MutationCreateStadiumArgs = {
+  stadiumData: CreateStadiumInput;
 };
 
 
@@ -74,6 +86,7 @@ export type Owner = {
   __typename?: 'Owner';
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  stadiums: Array<Stadium>;
   username: Scalars['String']['output'];
 };
 
@@ -86,15 +99,48 @@ export type OwnerAuthPayload = {
 
 export type OwnerAuthResult = AuthError | OwnerAuthPayload;
 
+export type OwnerAuthorizationError = BaseError & {
+  __typename?: 'OwnerAuthorizationError';
+  arbMessage: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
-  helloWorld?: Maybe<Scalars['String']['output']>;
+  getStadium: Stadium;
+  getStadiums: Array<Stadium>;
+};
+
+
+export type QueryGetStadiumArgs = {
+  stadiumId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetStadiumsArgs = {
+  cursor?: InputMaybe<Scalars['ID']['input']>;
+  filter?: InputMaybe<Scalars['String']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type SignupInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
+};
+
+export type Stadium = {
+  __typename?: 'Stadium';
+  /** The number of stadiums of the same properties the owner has. */
+  count: Scalars['Int']['output'];
+  /** Description for the stadium. */
+  desc?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  location?: Maybe<Location>;
+  name: Scalars['String']['output'];
+  owner: Owner;
+  /** The number of players per team including the goal keeper. */
+  size?: Maybe<Scalars['Int']['output']>;
 };
 
 export type User = {
@@ -112,6 +158,17 @@ export type UserAuthPayload = {
 };
 
 export type UserAuthResult = AuthError | UserAuthPayload;
+
+export type CreateStadiumInput = {
+  count?: InputMaybe<Scalars['Int']['input']>;
+  desc?: InputMaybe<Scalars['String']['input']>;
+  latitude?: InputMaybe<Scalars['Int']['input']>;
+  longitude?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+  size?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CreateStadiumResult = OwnerAuthorizationError | Stadium;
 
 
 
@@ -184,11 +241,12 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
   OwnerAuthResult: ( AuthError ) | ( OwnerAuthPayload );
   UserAuthResult: ( AuthError ) | ( UserAuthPayload );
+  createStadiumResult: ( OwnerAuthorizationError ) | ( Stadium );
 };
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = {
-  BaseError: ( AuthError );
+  BaseError: ( AuthError ) | ( OwnerAuthorizationError );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -198,16 +256,22 @@ export type ResolversTypes = {
   BaseError: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['BaseError']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  Location: ResolverTypeWrapper<Location>;
   Mutation: ResolverTypeWrapper<{}>;
   Owner: ResolverTypeWrapper<Owner>;
   OwnerAuthPayload: ResolverTypeWrapper<OwnerAuthPayload>;
   OwnerAuthResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['OwnerAuthResult']>;
+  OwnerAuthorizationError: ResolverTypeWrapper<OwnerAuthorizationError>;
   Query: ResolverTypeWrapper<{}>;
   SignupInput: SignupInput;
+  Stadium: ResolverTypeWrapper<Stadium>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   User: ResolverTypeWrapper<User>;
   UserAuthPayload: ResolverTypeWrapper<UserAuthPayload>;
   UserAuthResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['UserAuthResult']>;
+  createStadiumInput: CreateStadiumInput;
+  createStadiumResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['createStadiumResult']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -216,16 +280,22 @@ export type ResolversParentTypes = {
   BaseError: ResolversInterfaceTypes<ResolversParentTypes>['BaseError'];
   Boolean: Scalars['Boolean']['output'];
   ID: Scalars['ID']['output'];
+  Int: Scalars['Int']['output'];
+  Location: Location;
   Mutation: {};
   Owner: Owner;
   OwnerAuthPayload: OwnerAuthPayload;
   OwnerAuthResult: ResolversUnionTypes<ResolversParentTypes>['OwnerAuthResult'];
+  OwnerAuthorizationError: OwnerAuthorizationError;
   Query: {};
   SignupInput: SignupInput;
+  Stadium: Stadium;
   String: Scalars['String']['output'];
   User: User;
   UserAuthPayload: UserAuthPayload;
   UserAuthResult: ResolversUnionTypes<ResolversParentTypes>['UserAuthResult'];
+  createStadiumInput: CreateStadiumInput;
+  createStadiumResult: ResolversUnionTypes<ResolversParentTypes>['createStadiumResult'];
 };
 
 export type AuthErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthError'] = ResolversParentTypes['AuthError']> = {
@@ -236,12 +306,19 @@ export type AuthErrorResolvers<ContextType = any, ParentType extends ResolversPa
 };
 
 export type BaseErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['BaseError'] = ResolversParentTypes['BaseError']> = {
-  __resolveType: TypeResolveFn<'AuthError', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AuthError' | 'OwnerAuthorizationError', ParentType, ContextType>;
   arbMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
+export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
+  latitude?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  longitude?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createStadium?: Resolver<ResolversTypes['createStadiumResult'], ParentType, ContextType, RequireFields<MutationCreateStadiumArgs, 'stadiumData'>>;
   ownerLogin?: Resolver<ResolversTypes['OwnerAuthResult'], ParentType, ContextType, RequireFields<MutationOwnerLoginArgs, 'email' | 'password'>>;
   ownerSignup?: Resolver<ResolversTypes['OwnerAuthResult'], ParentType, ContextType, RequireFields<MutationOwnerSignupArgs, 'signupData'>>;
   userLogin?: Resolver<ResolversTypes['UserAuthResult'], ParentType, ContextType, RequireFields<MutationUserLoginArgs, 'email' | 'password'>>;
@@ -251,6 +328,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type OwnerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Owner'] = ResolversParentTypes['Owner']> = {
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  stadiums?: Resolver<Array<ResolversTypes['Stadium']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -265,8 +343,26 @@ export type OwnerAuthResultResolvers<ContextType = any, ParentType extends Resol
   __resolveType: TypeResolveFn<'AuthError' | 'OwnerAuthPayload', ParentType, ContextType>;
 };
 
+export type OwnerAuthorizationErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['OwnerAuthorizationError'] = ResolversParentTypes['OwnerAuthorizationError']> = {
+  arbMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  helloWorld?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  getStadium?: Resolver<ResolversTypes['Stadium'], ParentType, ContextType, RequireFields<QueryGetStadiumArgs, 'stadiumId'>>;
+  getStadiums?: Resolver<Array<ResolversTypes['Stadium']>, ParentType, ContextType, Partial<QueryGetStadiumsArgs>>;
+};
+
+export type StadiumResolvers<ContextType = any, ParentType extends ResolversParentTypes['Stadium'] = ResolversParentTypes['Stadium']> = {
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  desc?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  size?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -286,16 +382,24 @@ export type UserAuthResultResolvers<ContextType = any, ParentType extends Resolv
   __resolveType: TypeResolveFn<'AuthError' | 'UserAuthPayload', ParentType, ContextType>;
 };
 
+export type CreateStadiumResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['createStadiumResult'] = ResolversParentTypes['createStadiumResult']> = {
+  __resolveType: TypeResolveFn<'OwnerAuthorizationError' | 'Stadium', ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
   AuthError?: AuthErrorResolvers<ContextType>;
   BaseError?: BaseErrorResolvers<ContextType>;
+  Location?: LocationResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Owner?: OwnerResolvers<ContextType>;
   OwnerAuthPayload?: OwnerAuthPayloadResolvers<ContextType>;
   OwnerAuthResult?: OwnerAuthResultResolvers<ContextType>;
+  OwnerAuthorizationError?: OwnerAuthorizationErrorResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Stadium?: StadiumResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserAuthPayload?: UserAuthPayloadResolvers<ContextType>;
   UserAuthResult?: UserAuthResultResolvers<ContextType>;
+  createStadiumResult?: CreateStadiumResultResolvers<ContextType>;
 };
 

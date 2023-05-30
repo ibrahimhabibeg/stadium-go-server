@@ -8,7 +8,7 @@ import {
 
 const resolvers: Resolvers = {
   Query: {
-    helloWorld: () => "Hello World!",
+
   },
   Mutation: {
     userSignup: userSignupResolver,
