@@ -11,7 +11,8 @@ const config: CodegenConfig = {
       config: {
         scalars: {
           ID: "number | string"
-        }
+        },
+        contextType: "./context#BaseContext"
       }
     },
     "./graphql.schema.json": {

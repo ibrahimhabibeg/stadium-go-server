@@ -5,26 +5,24 @@ import {
   userLoginResolver,
   ownerLoginResolver,
 } from "./auth";
+import { StadiumResolver, OwnerResolver } from "./typeResolvers";
 
 const resolvers: Resolvers = {
-  Query: {
-
-  },
+  Query: {},
   Mutation: {
     userSignup: userSignupResolver,
     ownerSignup: ownerSignupResolver,
     userLogin: userLoginResolver,
-    ownerLogin: ownerLoginResolver
+    ownerLogin: ownerLoginResolver,
   },
   AuthError: {
     __isTypeOf: (root) => root.__typename === "AuthError",
   },
   User: {
     __isTypeOf: (root) => root.__typename === "User",
-    id: (root) => root.id,
-    email: (root) => root.email,
-    username: (root) => root.username,
   },
+  Owner: OwnerResolver,
+  Stadium: StadiumResolver,
 };
 
 export default resolvers;
