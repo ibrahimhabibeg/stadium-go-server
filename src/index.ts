@@ -6,10 +6,14 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { applyMiddleware } from "graphql-middleware";
 import resolvers from "./resolvers";
 import createContext from "./context";
+import authorizationMiddleware from "./middleware/auth";
 
 const typeDefs = readFileSync("./src/schema.gql", "utf8");
 
-const schema = applyMiddleware(makeExecutableSchema({ typeDefs, resolvers }));
+const schema = applyMiddleware(
+  makeExecutableSchema({ typeDefs, resolvers }),
+  authorizationMiddleware
+);
 
 const server = new ApolloServer<FullContext>({ schema });
 
