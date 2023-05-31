@@ -1,4 +1,4 @@
-import { BaseContext } from "../types/context";
+import { BaseContext, FullContext } from "../types/context";
 import type {
   Resolver,
   ResolverTypeWrapper,
@@ -14,6 +14,10 @@ import { ownerSignupDataError, userSignupDataError } from "./errorValidation";
 import jwt from "jsonwebtoken";
 import { emailNotExists, incorrectPassword } from "./errors";
 import { authorizations } from "../types/auth";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
 const JWT_SECRET = process.env.JWT_SECRET;
 
