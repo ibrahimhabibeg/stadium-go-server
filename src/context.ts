@@ -8,6 +8,11 @@ import { authorizations } from "./types/auth";
 const JWT_SECRET = process.env.JWT_SECRET;
 const prisma = new PrismaClient();
 
+/**
+ * Creates the context for the rest of the application.
+ * @param param Contains request and result. 
+ * @returns FullContext
+ */
 const createContext: ContextFunction<
   [StandaloneServerContextFunctionArgument],
   FullContext
