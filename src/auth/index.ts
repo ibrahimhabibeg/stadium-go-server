@@ -13,6 +13,7 @@ import bcrypt from "bcrypt";
 import { ownerSignupDataError, userSignupDataError } from "./errorValidation";
 import jwt from "jsonwebtoken";
 import { emailNotExists, incorrectPassword } from "./errors";
+import { authorizations } from "../types/auth";
 const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -45,7 +46,7 @@ export const userSignupResolver: Resolver<
       password: hashedPassword,
     },
   });
-  const token = jwt.sign(String(user.id), JWT_SECRET);
+  const token = jwt.sign(String({id:user.id, auth:authorizations.USER}), JWT_SECRET);
   return {
     __typename: "UserAuthPayload",
     token,
@@ -82,7 +83,7 @@ export const ownerSignupResolver: Resolver<
       password: hashedPassword,
     },
   });
-  const token = jwt.sign(String(owner.id), JWT_SECRET);
+  const token = jwt.sign(String({id:owner.id, auth:authorizations.OWNER}), JWT_SECRET);
   return {
     __typename: "OwnerAuthPayload",
     token,
@@ -108,7 +109,7 @@ export const userLoginResolver: Resolver<
   if (!user) return emailNotExists;
   const isValid = bcrypt.compareSync(password, user.password);
   if (!isValid) return incorrectPassword;
-  const token = jwt.sign(String(user.id), JWT_SECRET);
+  const token = jwt.sign(String({id:user.id, auth:authorizations.USER}), JWT_SECRET);
   return {
     __typename: "UserAuthPayload",
     token,
@@ -134,7 +135,7 @@ export const ownerLoginResolver: Resolver<
   if (!owner) return emailNotExists;
   const isValid = bcrypt.compareSync(password, owner.password);
   if (!isValid) return incorrectPassword;
-  const token = jwt.sign(String(owner.id), JWT_SECRET);
+  const token = jwt.sign(String({id:owner.id, auth:authorizations.OWNER}), JWT_SECRET);
   return {
     __typename: "OwnerAuthPayload",
     token,
