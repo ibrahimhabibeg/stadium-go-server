@@ -20,10 +20,32 @@ model User {
 }
 
 model Owner {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String   @unique
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  username  String    @unique
   password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Stadium   Stadium[]
+}
+
+model Stadium {
+  id        Int       @id @default(autoincrement())
+  owner     Owner     @relation(fields: [ownerId], references: [id])
+  ownerId   Int
+  name      String
+  count     Int
+  desc      String?
+  size      Int?
+  Location  Location?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Location {
+  id        Int     @id @default(autoincrement())
+  latitude  Int
+  longitude Int
+  stadium   Stadium @relation(fields: [stadiumId], references: [id])
+  stadiumId Int     @unique
 }

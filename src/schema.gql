@@ -1,11 +1,13 @@
-type Query{
-  helloWorld: String
+type Query {
+  getStadium(stadiumId: ID!): Stadium!
+  getStadiums(filter: String, cursor: ID, take: Int): [Stadium!]!
 }
 type Mutation {
   userLogin(email: String!, password: String!): UserAuthResult!
   ownerLogin(email: String!, password: String!): OwnerAuthResult!
   userSignup(signupData: SignupInput!): UserAuthResult!
   ownerSignup(signupData: SignupInput!): OwnerAuthResult!
+  createStadium(stadiumData: createStadiumInput!): createStadiumResult!
 }
 type User {
   id: ID!
@@ -16,6 +18,7 @@ type Owner {
   id: ID!
   username: String!
   email: String!
+  stadiums: [Stadium!]!
 }
 type UserAuthPayload {
   """
@@ -62,3 +65,43 @@ enum AuthField {
   PASSWORD
   EMAIL
 }
+
+type Stadium {
+  id: ID!
+  owner: Owner!
+  name: String!
+  """
+  The number of stadiums of the same properties the owner has.
+  """
+  count: Int!
+  """
+  Description for the stadium.
+  """
+  desc: String
+  """
+  The number of players per team including the goal keeper.
+  """
+  size: Int
+  location: Location
+}
+
+type Location {
+  latitude: Int!
+  longitude: Int!
+}
+
+input createStadiumInput{
+  name: String!
+  count: Int
+  desc: String
+  size: Int
+  latitude: Int
+  longitude: Int
+}
+
+type OwnerAuthorizationError implements BaseError{
+  message: String!
+  arbMessage: String!
+}
+
+union createStadiumResult = Stadium | OwnerAuthorizationError

@@ -4,27 +4,41 @@ import {
   ownerSignupResolver,
   userLoginResolver,
   ownerLoginResolver,
+  OwnerResolver,
 } from "./auth";
+import {
+  createStadiumResolver,
+  getStadiumResolver,
+  getStadiumsResolver,
+  StadiumResolver,
+} from "./stadiums";
 
 const resolvers: Resolvers = {
   Query: {
-    helloWorld: () => "Hello World!",
+    getStadium: getStadiumResolver,
+    getStadiums: getStadiumsResolver,
   },
   Mutation: {
     userSignup: userSignupResolver,
     ownerSignup: ownerSignupResolver,
     userLogin: userLoginResolver,
-    ownerLogin: ownerLoginResolver
+    ownerLogin: ownerLoginResolver,
+    createStadium: createStadiumResolver,
   },
   AuthError: {
     __isTypeOf: (root) => root.__typename === "AuthError",
   },
   User: {
     __isTypeOf: (root) => root.__typename === "User",
-    id: (root) => root.id,
-    email: (root) => root.email,
-    username: (root) => root.username,
   },
+  OwnerAuthorizationError: {
+    __isTypeOf: (root) => root.__typename === "OwnerAuthorizationError",
+  },
+  Location: {
+    __isTypeOf: (root) => root.__typename === "Location",
+  },
+  Owner: OwnerResolver,
+  Stadium: StadiumResolver,
 };
 
 export default resolvers;

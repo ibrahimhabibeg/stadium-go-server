@@ -8,11 +8,18 @@ import type {
   MutationUserLoginArgs,
   RequireFields,
   OwnerAuthPayload,
+  Owner,
+  OwnerResolvers,
 } from "../types/graphql";
 import bcrypt from "bcrypt";
 import { ownerSignupDataError, userSignupDataError } from "./errorValidation";
 import jwt from "jsonwebtoken";
 import { emailNotExists, incorrectPassword } from "./errors";
+import { authorizations } from "../types/auth";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -45,7 +52,10 @@ export const userSignupResolver: Resolver<
       password: hashedPassword,
     },
   });
-  const token = jwt.sign(String(user.id), JWT_SECRET);
+  const token = jwt.sign(
+    { id: user.id, auth: authorizations.USER },
+    JWT_SECRET
+  );
   return {
     __typename: "UserAuthPayload",
     token,
@@ -82,7 +92,10 @@ export const ownerSignupResolver: Resolver<
       password: hashedPassword,
     },
   });
-  const token = jwt.sign(String(owner.id), JWT_SECRET);
+  const token = jwt.sign(
+    { id: owner.id, auth: authorizations.OWNER },
+    JWT_SECRET
+  );
   return {
     __typename: "OwnerAuthPayload",
     token,
@@ -108,7 +121,10 @@ export const userLoginResolver: Resolver<
   if (!user) return emailNotExists;
   const isValid = bcrypt.compareSync(password, user.password);
   if (!isValid) return incorrectPassword;
-  const token = jwt.sign(String(user.id), JWT_SECRET);
+  const token = jwt.sign(
+    { id: user.id, auth: authorizations.USER },
+    JWT_SECRET
+  );
   return {
     __typename: "UserAuthPayload",
     token,
@@ -134,10 +150,33 @@ export const ownerLoginResolver: Resolver<
   if (!owner) return emailNotExists;
   const isValid = bcrypt.compareSync(password, owner.password);
   if (!isValid) return incorrectPassword;
-  const token = jwt.sign(String(owner.id), JWT_SECRET);
+  const token = jwt.sign(
+    { id: owner.id, auth: authorizations.OWNER },
+    JWT_SECRET
+  );
   return {
     __typename: "OwnerAuthPayload",
     token,
     owner: { __typename: "Owner", ...owner },
   };
+};
+
+/**
+ * Resolves upper resolvers that return an owner
+ */
+export const OwnerResolver: OwnerResolvers<BaseContext, Owner> = {
+  __isTypeOf: (root) => root.__typename === "Owner",
+  /**
+   * Gets the stadiums of the owner
+   * @param root contains id of owner
+   * @param args 
+   * @param context contains instance of PrismaClient 
+   * @returns stadiums
+   */
+  stadiums: async (root, {}, { prisma }: BaseContext) => {
+    const stadiums = await prisma.stadium.findMany({
+      where: { ownerId: Number(root.id) },
+    });
+    return stadiums.map((stadium) => ({ ...stadium, __typename: "Stadium" }));
+  },
 };
