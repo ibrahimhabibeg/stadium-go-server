@@ -1,5 +1,5 @@
 import { IMiddleware, IMiddlewareFunction } from "graphql-middleware";
-import { OwnerIdIncludedContext, OwnerIncludedContext } from "../types/context";
+import { OwnerIdIncludedContext } from "../types/context";
 import { OwnerAuthorizationError } from "../types/graphql";
 
 const notLoggedInOwnerError: OwnerAuthorizationError = {
