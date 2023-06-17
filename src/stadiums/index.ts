@@ -6,6 +6,7 @@ import type {
   RequireFields,
   MutationCreateStadiumArgs,
   QueryGetStadiumArgs,
+  QueryGetStadiumsArgs,
 } from "../types/graphql";
 import type { OwnerIdIncludedContext, BaseContext } from "../types/context";
 
@@ -45,4 +46,28 @@ export const getStadiumResolver: Resolver<
     },
   });
   return { ...stadium, __typename: "Stadium" };
+};
+
+export const getStadiumsResolver: Resolver<
+  ResolverTypeWrapper<Stadium>[],
+  {},
+  BaseContext,
+  Partial<QueryGetStadiumsArgs>
+> = async (root, { cursor, filter, take = 5 }, { prisma }) => {
+  const stadiums = await prisma.stadium.findMany({
+    orderBy: { id: "desc" },
+    where: {
+      ...(cursor ? { id: { lt: Number(cursor) } } : {}),
+      ...(filter
+        ? {
+            OR: [
+              { name: { contains: filter } },
+              { desc: { contains: filter } },
+            ],
+          }
+        : {}),
+    },
+    take,
+  });
+  return stadiums.map((stadium) => ({ ...stadium, __typename: "Stadium" }));
 };

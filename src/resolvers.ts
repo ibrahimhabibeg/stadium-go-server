@@ -5,12 +5,17 @@ import {
   userLoginResolver,
   ownerLoginResolver,
 } from "./auth";
-import { createStadiumResolver, getStadiumResolver } from "./stadiums";
+import {
+  createStadiumResolver,
+  getStadiumResolver,
+  getStadiumsResolver,
+} from "./stadiums";
 import { StadiumResolver, OwnerResolver } from "./typeResolvers";
 
 const resolvers: Resolvers = {
   Query: {
     getStadium: getStadiumResolver,
+    getStadiums: getStadiumsResolver,
   },
   Mutation: {
     userSignup: userSignupResolver,
