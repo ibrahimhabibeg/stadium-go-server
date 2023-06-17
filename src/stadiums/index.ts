@@ -5,8 +5,9 @@ import type {
   Stadium,
   RequireFields,
   MutationCreateStadiumArgs,
+  QueryGetStadiumArgs,
 } from "../types/graphql";
-import type { OwnerIdIncludedContext } from "../types/context";
+import type { OwnerIdIncludedContext, BaseContext } from "../types/context";
 
 export const createStadiumResolver: Resolver<
   ResolverTypeWrapper<OwnerAuthorizationError | Stadium>,
@@ -27,6 +28,20 @@ export const createStadiumResolver: Resolver<
       Location:
         longitude && latitude ? { create: { longitude, latitude } } : undefined,
       owner: { connect: { id: ownerId } },
+    },
+  });
+  return { ...stadium, __typename: "Stadium" };
+};
+
+export const getStadiumResolver: Resolver<
+  ResolverTypeWrapper<Stadium>,
+  {},
+  BaseContext,
+  RequireFields<QueryGetStadiumArgs, "stadiumId">
+> = async (root, { stadiumId }, { prisma }) => {
+  const stadium = await prisma.stadium.findUnique({
+    where: {
+      id: Number(stadiumId),
     },
   });
   return { ...stadium, __typename: "Stadium" };
