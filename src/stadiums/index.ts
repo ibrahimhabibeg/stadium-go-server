@@ -7,6 +7,7 @@ import type {
   MutationCreateStadiumArgs,
   QueryGetStadiumArgs,
   QueryGetStadiumsArgs,
+  StadiumResolvers
 } from "../types/graphql";
 import type { OwnerIdIncludedContext, BaseContext } from "../types/context";
 
@@ -70,4 +71,24 @@ export const getStadiumsResolver: Resolver<
     take,
   });
   return stadiums.map((stadium) => ({ ...stadium, __typename: "Stadium" }));
+};
+
+
+export const StadiumResolver: StadiumResolvers<BaseContext, Stadium> = {
+  __isTypeOf: (root) => root.__typename === "Stadium",
+  owner: async (root, {}, { prisma }: BaseContext) => {
+    if (root.owner) return root.owner;
+    const { owner } = await prisma.stadium.findUnique({
+      where: { id: Number(root.id) },
+      include: { owner: true },
+    });
+    return { ...owner, __typename: "Owner" };
+  },
+  location: async ({ id }, {}, { prisma }: BaseContext) => {
+    const location = await prisma.location.findUnique({
+      where: { stadiumId: Number(id) },
+    });
+    if(!location) return location;
+    return { ...location, __typename: "Location" };
+  },
 };

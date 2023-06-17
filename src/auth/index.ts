@@ -1,4 +1,4 @@
-import { BaseContext, FullContext } from "../types/context";
+import { BaseContext } from "../types/context";
 import type {
   Resolver,
   ResolverTypeWrapper,
@@ -8,6 +8,8 @@ import type {
   MutationUserLoginArgs,
   RequireFields,
   OwnerAuthPayload,
+  Owner,
+  OwnerResolvers,
 } from "../types/graphql";
 import bcrypt from "bcrypt";
 import { ownerSignupDataError, userSignupDataError } from "./errorValidation";
@@ -157,4 +159,14 @@ export const ownerLoginResolver: Resolver<
     token,
     owner: { __typename: "Owner", ...owner },
   };
+};
+
+export const OwnerResolver: OwnerResolvers<BaseContext, Owner> = {
+  __isTypeOf: (root) => root.__typename === "Owner",
+  stadiums: async (root, {}, { prisma }: BaseContext) => {
+    const stadiums = await prisma.stadium.findMany({
+      where: { ownerId: Number(root.id) },
+    });
+    return stadiums.map((stadium) => ({ ...stadium, __typename: "Stadium" }));
+  },
 };

@@ -4,13 +4,14 @@ import {
   ownerSignupResolver,
   userLoginResolver,
   ownerLoginResolver,
+  OwnerResolver,
 } from "./auth";
 import {
   createStadiumResolver,
   getStadiumResolver,
   getStadiumsResolver,
+  StadiumResolver,
 } from "./stadiums";
-import { StadiumResolver, OwnerResolver } from "./typeResolvers";
 
 const resolvers: Resolvers = {
   Query: {
