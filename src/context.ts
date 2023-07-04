@@ -23,8 +23,7 @@ const createContext: ContextFunction<
   if (!token) return context;
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    if (typeof decoded === "string") return context;
-    if (decoded.id && decoded.auth) {
+    if (typeof decoded !== "string") {
       if (decoded.auth === authorizations.OWNER) context.ownerId = decoded.id;
       if (decoded.auth === authorizations.USER) context.userId = decoded.id;
     }

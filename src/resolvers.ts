@@ -12,13 +12,14 @@ import {
   getStadiumsResolver,
   StadiumResolver,
 } from "./stadiums";
-import { verifyOwnerResolver } from "./auth/verify";
+import { verifyOwnerResolver, verifyUserResolver } from "./auth/verify";
 
 const resolvers: Resolvers = {
   Query: {
     getStadium: getStadiumResolver,
     getStadiums: getStadiumsResolver,
     verifyOwner: verifyOwnerResolver,
+    verifyUser: verifyUserResolver,
   },
   Mutation: {
     userSignup: userSignupResolver,
