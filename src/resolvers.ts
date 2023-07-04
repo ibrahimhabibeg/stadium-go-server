@@ -4,7 +4,8 @@ import {
   ownerSignupResolver,
   userLoginResolver,
   ownerLoginResolver,
-  OwnerResolver,
+  verifyOwnerResolver,
+  verifyUserResolver,
 } from "./auth";
 import {
   createStadiumResolver,
@@ -12,11 +13,14 @@ import {
   getStadiumsResolver,
   StadiumResolver,
 } from "./stadiums";
+import { OwnerResolver } from "./users";
 
 const resolvers: Resolvers = {
   Query: {
     getStadium: getStadiumResolver,
     getStadiums: getStadiumsResolver,
+    verifyOwner: verifyOwnerResolver,
+    verifyUser: verifyUserResolver,
   },
   Mutation: {
     userSignup: userSignupResolver,
