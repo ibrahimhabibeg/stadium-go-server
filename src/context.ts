@@ -10,22 +10,25 @@ const prisma = new PrismaClient();
 
 /**
  * Creates the context for the rest of the application.
- * @param param Contains request and result. 
+ * Contins userId or ownerId if and only if provided valid JWT in Authorization header.
+ * @param param Contains request and result.
  * @returns FullContext
  */
 const createContext: ContextFunction<
   [StandaloneServerContextFunctionArgument],
   FullContext
-> = async ({ req, res }) => {  
+> = async ({ req, res }) => {
   const context: FullContext = { prisma, userId: null, ownerId: null };
   const token = req.headers.authorization || "";
   if (!token) return context;
-  const decoded = jwt.verify(token, JWT_SECRET);
-  if(typeof decoded === "string") return context;
-  if(decoded.id && decoded.auth){
-    if(decoded.auth === authorizations.OWNER) context.ownerId = decoded.id;
-    if(decoded.auth === authorizations.USER) context.userId = decoded.id;
-  }
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (typeof decoded === "string") return context;
+    if (decoded.id && decoded.auth) {
+      if (decoded.auth === authorizations.OWNER) context.ownerId = decoded.id;
+      if (decoded.auth === authorizations.USER) context.userId = decoded.id;
+    }
+  } catch (error) {}
   return context;
 };
 

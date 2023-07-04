@@ -110,6 +110,8 @@ export type Query = {
   __typename?: 'Query';
   getStadium: Stadium;
   getStadiums: Array<Stadium>;
+  verifyOwner: VerifyOwnerResult;
+  verifyUser: VerifyUserResult;
 };
 
 
@@ -160,6 +162,12 @@ export type UserAuthPayload = {
 
 export type UserAuthResult = AuthError | UserAuthPayload;
 
+export type UserAuthorizationError = BaseError & {
+  __typename?: 'UserAuthorizationError';
+  arbMessage: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+};
+
 export type CreateStadiumInput = {
   count?: InputMaybe<Scalars['Int']['input']>;
   desc?: InputMaybe<Scalars['String']['input']>;
@@ -170,6 +178,10 @@ export type CreateStadiumInput = {
 };
 
 export type CreateStadiumResult = OwnerAuthorizationError | Stadium;
+
+export type VerifyOwnerResult = Owner | OwnerAuthorizationError;
+
+export type VerifyUserResult = User | UserAuthorizationError;
 
 
 
@@ -243,11 +255,13 @@ export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
   OwnerAuthResult: ( AuthError ) | ( OwnerAuthPayload );
   UserAuthResult: ( AuthError ) | ( UserAuthPayload );
   createStadiumResult: ( OwnerAuthorizationError ) | ( Stadium );
+  verifyOwnerResult: ( Owner ) | ( OwnerAuthorizationError );
+  verifyUserResult: ( User ) | ( UserAuthorizationError );
 };
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = {
-  BaseError: ( AuthError ) | ( OwnerAuthorizationError );
+  BaseError: ( AuthError ) | ( OwnerAuthorizationError ) | ( UserAuthorizationError );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -271,8 +285,11 @@ export type ResolversTypes = {
   User: ResolverTypeWrapper<User>;
   UserAuthPayload: ResolverTypeWrapper<UserAuthPayload>;
   UserAuthResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['UserAuthResult']>;
+  UserAuthorizationError: ResolverTypeWrapper<UserAuthorizationError>;
   createStadiumInput: CreateStadiumInput;
   createStadiumResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['createStadiumResult']>;
+  verifyOwnerResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['verifyOwnerResult']>;
+  verifyUserResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['verifyUserResult']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -295,8 +312,11 @@ export type ResolversParentTypes = {
   User: User;
   UserAuthPayload: UserAuthPayload;
   UserAuthResult: ResolversUnionTypes<ResolversParentTypes>['UserAuthResult'];
+  UserAuthorizationError: UserAuthorizationError;
   createStadiumInput: CreateStadiumInput;
   createStadiumResult: ResolversUnionTypes<ResolversParentTypes>['createStadiumResult'];
+  verifyOwnerResult: ResolversUnionTypes<ResolversParentTypes>['verifyOwnerResult'];
+  verifyUserResult: ResolversUnionTypes<ResolversParentTypes>['verifyUserResult'];
 };
 
 export type AuthErrorResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['AuthError'] = ResolversParentTypes['AuthError']> = {
@@ -307,7 +327,7 @@ export type AuthErrorResolvers<ContextType = BaseContext, ParentType extends Res
 };
 
 export type BaseErrorResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['BaseError'] = ResolversParentTypes['BaseError']> = {
-  __resolveType: TypeResolveFn<'AuthError' | 'OwnerAuthorizationError', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AuthError' | 'OwnerAuthorizationError' | 'UserAuthorizationError', ParentType, ContextType>;
   arbMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
@@ -353,6 +373,8 @@ export type OwnerAuthorizationErrorResolvers<ContextType = BaseContext, ParentTy
 export type QueryResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   getStadium?: Resolver<ResolversTypes['Stadium'], ParentType, ContextType, RequireFields<QueryGetStadiumArgs, 'stadiumId'>>;
   getStadiums?: Resolver<Array<ResolversTypes['Stadium']>, ParentType, ContextType, Partial<QueryGetStadiumsArgs>>;
+  verifyOwner?: Resolver<ResolversTypes['verifyOwnerResult'], ParentType, ContextType>;
+  verifyUser?: Resolver<ResolversTypes['verifyUserResult'], ParentType, ContextType>;
 };
 
 export type StadiumResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Stadium'] = ResolversParentTypes['Stadium']> = {
@@ -383,8 +405,22 @@ export type UserAuthResultResolvers<ContextType = BaseContext, ParentType extend
   __resolveType: TypeResolveFn<'AuthError' | 'UserAuthPayload', ParentType, ContextType>;
 };
 
+export type UserAuthorizationErrorResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['UserAuthorizationError'] = ResolversParentTypes['UserAuthorizationError']> = {
+  arbMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type CreateStadiumResultResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['createStadiumResult'] = ResolversParentTypes['createStadiumResult']> = {
   __resolveType: TypeResolveFn<'OwnerAuthorizationError' | 'Stadium', ParentType, ContextType>;
+};
+
+export type VerifyOwnerResultResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['verifyOwnerResult'] = ResolversParentTypes['verifyOwnerResult']> = {
+  __resolveType: TypeResolveFn<'Owner' | 'OwnerAuthorizationError', ParentType, ContextType>;
+};
+
+export type VerifyUserResultResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['verifyUserResult'] = ResolversParentTypes['verifyUserResult']> = {
+  __resolveType: TypeResolveFn<'User' | 'UserAuthorizationError', ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = BaseContext> = {
@@ -401,6 +437,9 @@ export type Resolvers<ContextType = BaseContext> = {
   User?: UserResolvers<ContextType>;
   UserAuthPayload?: UserAuthPayloadResolvers<ContextType>;
   UserAuthResult?: UserAuthResultResolvers<ContextType>;
+  UserAuthorizationError?: UserAuthorizationErrorResolvers<ContextType>;
   createStadiumResult?: CreateStadiumResultResolvers<ContextType>;
+  verifyOwnerResult?: VerifyOwnerResultResolvers<ContextType>;
+  verifyUserResult?: VerifyUserResultResolvers<ContextType>;
 };
 

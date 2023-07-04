@@ -5,12 +5,14 @@ import { OwnerAuthorizationError } from "../types/graphql";
 const notLoggedInOwnerError: OwnerAuthorizationError = {
   __typename: "OwnerAuthorizationError",
   message:
-    "You must be a stadium owner to preform the function ypu requested.",
+    "You must be a stadium owner to preform the function you requested.",
   arbMessage: "يجب أن تكون مالك لملعب لأداء الوظيفة التي طلبتها",
 };
 
 /**
- * Returns error on failure in verifying owner. Returns the result of the resolver in case of verification succes and adds the owner to context.
+ * Returns error on failure in verifying owner.
+ * Otherwise runs the resolver with context type OwnerIdIncludedContext.
+ * The ownerId in context is guranteed to be valid.
  * @param resolve the requested resolver function
  * @param root 
  * @param args any
@@ -27,14 +29,16 @@ const authorizeOwner: IMiddlewareFunction<
     where: { id: context.ownerId },
   });
   if (!owner) return notLoggedInOwnerError;
-  const newContext = { ...context, owner };
-  return resolve(root, args, newContext);
+  return resolve(root, args, context);
 };
 
 /**
  * The authorization layer of the program.
  */
 const authorizationMiddleware: IMiddleware = {
+  Query: {
+    verifyOwner: authorizeOwner,
+  },
   Mutation: {
     createStadium: authorizeOwner,
   },

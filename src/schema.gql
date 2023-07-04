@@ -1,6 +1,8 @@
 type Query {
   getStadium(stadiumId: ID!): Stadium!
   getStadiums(filter: String, cursor: ID, take: Int): [Stadium!]!
+  verifyUser: verifyUserResult!
+  verifyOwner: verifyOwnerResult!
 }
 type Mutation {
   userLogin(email: String!, password: String!): UserAuthResult!
@@ -104,4 +106,11 @@ type OwnerAuthorizationError implements BaseError{
   arbMessage: String!
 }
 
+type UserAuthorizationError implements BaseError{
+  message: String!
+  arbMessage: String!
+}
+
 union createStadiumResult = Stadium | OwnerAuthorizationError
+union verifyUserResult = User | UserAuthorizationError
+union verifyOwnerResult = Owner | OwnerAuthorizationError
