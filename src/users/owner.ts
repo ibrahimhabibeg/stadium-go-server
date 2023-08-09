@@ -19,6 +19,7 @@ export const OwnerResolver: OwnerResolvers<BaseContext, Owner> = {
   stadiums: async (root, {}, { prisma }: BaseContext) => {
     const stadiums = await prisma.stadium.findMany({
       where: { ownerId: Number(root.id) },
+      orderBy:[{createdAt:"desc"}]
     });
     return stadiums.map((stadium) => ({ ...stadium, __typename: "Stadium" }));
   },
