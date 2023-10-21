@@ -44,8 +44,8 @@ model Stadium {
 
 model Location {
   id        Int     @id @default(autoincrement())
-  latitude  Int
-  longitude Int
+  latitude  Float
+  longitude Float
   stadium   Stadium @relation(fields: [stadiumId], references: [id])
   stadiumId Int     @unique
 }

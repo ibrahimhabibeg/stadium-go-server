@@ -88,8 +88,8 @@ type Stadium {
 }
 
 type Location {
-  latitude: Int!
-  longitude: Int!
+  latitude: Float!
+  longitude: Float!
 }
 
 input createStadiumInput{
@@ -97,8 +97,8 @@ input createStadiumInput{
   count: Int
   desc: String
   size: Int
-  latitude: Int
-  longitude: Int
+  latitude: Float
+  longitude: Float
 }
 
 type OwnerAuthorizationError implements BaseError{
