@@ -20,7 +20,7 @@ type Owner {
   id: ID!
   username: String!
   email: String!
-  stadiums: [Stadium!]!
+  stadiums(cursor: ID, take: Int): [Stadium!]!
 }
 type UserAuthPayload {
   """

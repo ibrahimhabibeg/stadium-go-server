@@ -16,10 +16,14 @@ export const OwnerResolver: OwnerResolvers<BaseContext, Owner> = {
    * @param context contains instance of PrismaClient
    * @returns stadiums
    */
-  stadiums: async (root, {}, { prisma }: BaseContext) => {
+  stadiums: async (root, { cursor, take }, { prisma }: BaseContext) => {
     const stadiums = await prisma.stadium.findMany({
-      where: { ownerId: Number(root.id) },
-      orderBy:[{createdAt:"desc"}]
+      where: {
+        ...(cursor ? { id: { lt: Number(cursor) } } : {}),
+        ownerId: Number(root.id),
+      },
+      orderBy: [{ createdAt: "desc" }],
+      take,
     });
     return stadiums.map((stadium) => ({ ...stadium, __typename: "Stadium" }));
   },

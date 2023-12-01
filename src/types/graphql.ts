@@ -43,8 +43,8 @@ export type BaseError = {
 
 export type Location = {
   __typename?: 'Location';
-  latitude: Scalars['Int']['output'];
-  longitude: Scalars['Int']['output'];
+  latitude: Scalars['Float']['output'];
+  longitude: Scalars['Float']['output'];
 };
 
 export type Mutation = {
@@ -89,6 +89,12 @@ export type Owner = {
   id: Scalars['ID']['output'];
   stadiums?: Maybe<Array<Stadium>>;
   username: Scalars['String']['output'];
+};
+
+
+export type OwnerStadiumsArgs = {
+  cursor?: InputMaybe<Scalars['ID']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type OwnerAuthPayload = {
@@ -171,8 +177,8 @@ export type UserAuthorizationError = BaseError & {
 export type CreateStadiumInput = {
   count?: InputMaybe<Scalars['Int']['input']>;
   desc?: InputMaybe<Scalars['String']['input']>;
-  latitude?: InputMaybe<Scalars['Int']['input']>;
-  longitude?: InputMaybe<Scalars['Int']['input']>;
+  latitude?: InputMaybe<Scalars['Float']['input']>;
+  longitude?: InputMaybe<Scalars['Float']['input']>;
   name: Scalars['String']['input'];
   size?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -270,6 +276,7 @@ export type ResolversTypes = {
   AuthField: AuthField;
   BaseError: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['BaseError']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Location: ResolverTypeWrapper<Location>;
@@ -297,6 +304,7 @@ export type ResolversParentTypes = {
   AuthError: AuthError;
   BaseError: ResolversInterfaceTypes<ResolversParentTypes>['BaseError'];
   Boolean: Scalars['Boolean']['output'];
+  Float: Scalars['Float']['output'];
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   Location: Location;
@@ -333,8 +341,8 @@ export type BaseErrorResolvers<ContextType = BaseContext, ParentType extends Res
 };
 
 export type LocationResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
-  latitude?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  longitude?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -349,7 +357,7 @@ export type MutationResolvers<ContextType = BaseContext, ParentType extends Reso
 export type OwnerResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Owner'] = ResolversParentTypes['Owner']> = {
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  stadiums: Resolver<Array<ResolversTypes['Stadium']>, ParentType, ContextType>;
+  stadiums?: Resolver<Array<ResolversTypes['Stadium']>, ParentType, ContextType, Partial<OwnerStadiumsArgs>>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
