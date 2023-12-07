@@ -7,14 +7,14 @@ import type {
   MutationCreateStadiumArgs,
   QueryGetStadiumArgs,
   QueryGetStadiumsArgs,
-  StadiumResolvers
+  StadiumResolvers,
 } from "../types/graphql";
 import type { OwnerIdIncludedContext, BaseContext } from "../types/context";
 
 /**
- * Creates new stadium with the given input in args. Owner of stadium is known from authorization header. 
+ * Creates new stadium with the given input in args. Owner of stadium is known from authorization header.
  * Authorization layer is responsiple for storing ownerId in context and handling invalid owner authorization errors.
- * @param root 
+ * @param root
  * @param args contains new stadium data
  * @param context contains instance of PrismaClient and ownerId
  * @returns The newly created stadium
@@ -26,7 +26,7 @@ export const createStadiumResolver: Resolver<
   RequireFields<MutationCreateStadiumArgs, "stadiumData">
 > = async (
   root,
-  { stadiumData: { name, desc, count, latitude, longitude, size } },
+  { stadiumData: { name, desc, count, latitude, longitude, size, cityId } },
   { prisma, ownerId }
 ) => {
   const stadium = await prisma.stadium.create({
@@ -38,6 +38,7 @@ export const createStadiumResolver: Resolver<
       Location:
         longitude && latitude ? { create: { longitude, latitude } } : undefined,
       owner: { connect: { id: ownerId } },
+      city: cityId ? { connect: { id: Number(cityId) } } : undefined,
     },
   });
   return { ...stadium, __typename: "Stadium" };
@@ -45,9 +46,9 @@ export const createStadiumResolver: Resolver<
 
 /**
  * Gets requested stadium
- * @param root 
+ * @param root
  * @param args contains stadium id
- * @param context contains instance of PrismaClient 
+ * @param context contains instance of PrismaClient
  * @returns requested stadium
  */
 export const getStadiumResolver: Resolver<
@@ -67,9 +68,9 @@ export const getStadiumResolver: Resolver<
 /**
  * Gets stadiums ordered by descending id.
  * Handles filtering and cursor pagination on id.
- * @param root 
+ * @param root
  * @param args containg cursor, filter, and take
- * @param context contains instance of PrismaClient 
+ * @param context contains instance of PrismaClient
  * @returns stadiums
  */
 export const getStadiumsResolver: Resolver<
@@ -104,8 +105,8 @@ export const StadiumResolver: StadiumResolvers<BaseContext, Stadium> = {
   /**
    * Gets owner of the stadium
    * @param root contains id of stadium and may contain owner
-   * @param args 
-   * @param context contains instance of PrismaClient 
+   * @param args
+   * @param context contains instance of PrismaClient
    * @returns owner
    */
   owner: async (root, {}, { prisma }: BaseContext) => {
@@ -118,16 +119,24 @@ export const StadiumResolver: StadiumResolvers<BaseContext, Stadium> = {
   },
   /**
    * Gets location of stadium if it was provided
-   * @param root contains id of stadium 
-   * @param args 
-   * @param context contains instance of PrismaClient 
+   * @param root contains id of stadium
+   * @param args
+   * @param context contains instance of PrismaClient
    * @returns location or null
    */
   location: async ({ id }, {}, { prisma }: BaseContext) => {
     const location = await prisma.location.findUnique({
       where: { stadiumId: Number(id) },
     });
-    if(!location) return location;
+    if (!location) return location;
     return { ...location, __typename: "Location" };
+  },
+  city: async ({ id, city }, {}, { prisma }: BaseContext) => {
+    if (city) return city;
+    const stadium = await prisma.stadium.findUnique({
+      where: { id: Number(id) },
+      select: { city: true },
+    });
+    return stadium.city;
   },
 };

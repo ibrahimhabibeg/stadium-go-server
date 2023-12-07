@@ -453,7 +453,7 @@ export type VerifyUserResultResolvers<ContextType = BaseContext, ParentType exte
 export type Resolvers<ContextType = BaseContext> = {
   AuthError?: AuthErrorResolvers<ContextType>;
   BaseError?: BaseErrorResolvers<ContextType>;
-  City: CityResolvers<ContextType>;
+  City?: CityResolvers<ContextType>;
   Location?: LocationResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Owner: OwnerResolvers<ContextType>;
