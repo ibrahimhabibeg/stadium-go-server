@@ -1,3 +1,5 @@
+scalar DateTime
+
 type Query {
   getStadium(stadiumId: ID!): Stadium!
   getStadiums(filter: String, cursor: ID, take: Int): [Stadium!]!
@@ -99,7 +101,28 @@ type City {
   name: String!
 }
 
-input createStadiumInput{
+type Timeslot {
+  id: ID!
+  """
+  Indicates the beginning of the allocated timeslot.
+  """
+  startTime: DateTime!
+  """
+  Indicates the end of the allocated timeslot.
+  """
+  endTime: DateTime!
+  """
+  Integer value representing the price for booking the stadium for this timeslot in EGP.
+  """
+  price: Int!
+  stadium: Stadium!
+  """
+  The user who booked the stadium for this timeslot. Null if not booked.
+  """
+  bookedBy: User
+}
+
+input createStadiumInput {
   name: String!
   count: Int
   desc: String
@@ -109,12 +132,12 @@ input createStadiumInput{
   cityId: ID
 }
 
-type OwnerAuthorizationError implements BaseError{
+type OwnerAuthorizationError implements BaseError {
   message: String!
   arbMessage: String!
 }
 
-type UserAuthorizationError implements BaseError{
+type UserAuthorizationError implements BaseError {
   message: String!
   arbMessage: String!
 }

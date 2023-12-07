@@ -7,8 +7,12 @@ import { applyMiddleware } from "graphql-middleware";
 import resolvers from "./resolvers";
 import createContext from "./context";
 import authorizationMiddleware from "./middleware/auth";
+import { DateTimeTypeDefinition } from "graphql-scalars";
 
-const typeDefs = readFileSync("./src/schema.gql", "utf8");
+const typeDefs = [
+  DateTimeTypeDefinition,
+  readFileSync("./src/schema.gql", "utf8"),
+];
 
 const schema = applyMiddleware(
   makeExecutableSchema({ typeDefs, resolvers }),
