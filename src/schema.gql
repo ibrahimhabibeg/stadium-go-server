@@ -13,6 +13,7 @@ type Mutation {
   userSignup(signupData: SignupInput!): UserAuthResult!
   ownerSignup(signupData: SignupInput!): OwnerAuthResult!
   createStadium(stadiumData: createStadiumInput!): createStadiumResult!
+  addTimeslot(timeslotData: addTimeslotInput!): addTimeslotResult!
 }
 type User {
   id: ID!
@@ -132,6 +133,13 @@ input createStadiumInput {
   cityId: ID
 }
 
+input addTimeslotInput {
+  stadiumId: ID!
+  startTime: DateTime!
+  endTime: DateTime!
+  price: Int!
+}
+
 type OwnerAuthorizationError implements BaseError {
   message: String!
   arbMessage: String!
@@ -142,6 +150,12 @@ type UserAuthorizationError implements BaseError {
   arbMessage: String!
 }
 
+type InvalidTimeslotDataError implements BaseError {
+  message: String!
+  arbMessage: String!
+}
+
 union createStadiumResult = Stadium | OwnerAuthorizationError
 union verifyUserResult = User | UserAuthorizationError
 union verifyOwnerResult = Owner | OwnerAuthorizationError
+union addTimeslotResult = Timeslot | OwnerAuthorizationError | InvalidTimeslotDataError

@@ -79,3 +79,19 @@ export interface FullContext extends BaseContext {
    */
   ownerId: number;
 }
+
+export interface StadiumAndOwnerContext extends BaseContext {
+  prisma: PrismaClient<
+    Prisma.PrismaClientOptions,
+    never,
+    Prisma.RejectOnNotFound | Prisma.RejectPerOperation
+  >;
+  /**
+   * The ID of the user. Null if user isn't verified.
+   */
+  stadiumId: number;
+  /**
+   * The ID of the owner. Null if owner isn't verified.
+   */
+  ownerId: number;
+}

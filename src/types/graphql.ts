@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { BaseContext } from './context';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -15,6 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
 };
 
 export type AuthError = BaseError & {
@@ -47,6 +48,12 @@ export type City = {
   name: Scalars['String']['output'];
 };
 
+export type InvalidTimeslotDataError = BaseError & {
+  __typename?: 'InvalidTimeslotDataError';
+  arbMessage: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+};
+
 export type Location = {
   __typename?: 'Location';
   latitude: Scalars['Float']['output'];
@@ -55,11 +62,17 @@ export type Location = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addTimeslot: AddTimeslotResult;
   createStadium: CreateStadiumResult;
   ownerLogin: OwnerAuthResult;
   ownerSignup: OwnerAuthResult;
   userLogin: UserAuthResult;
   userSignup: UserAuthResult;
+};
+
+
+export type MutationAddTimeslotArgs = {
+  timeslotData: AddTimeslotInput;
 };
 
 
@@ -160,6 +173,20 @@ export type Stadium = {
   size?: Maybe<Scalars['Int']['output']>;
 };
 
+export type Timeslot = {
+  __typename?: 'Timeslot';
+  /** The user who booked the stadium for this timeslot. Null if not booked. */
+  bookedBy?: Maybe<User>;
+  /** Indicates the end of the allocated timeslot. */
+  endTime: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  /** Integer value representing the price for booking the stadium for this timeslot in EGP. */
+  price: Scalars['Int']['output'];
+  stadium: Stadium;
+  /** Indicates the beginning of the allocated timeslot. */
+  startTime: Scalars['DateTime']['output'];
+};
+
 export type User = {
   __typename?: 'User';
   email: Scalars['String']['output'];
@@ -181,6 +208,15 @@ export type UserAuthorizationError = BaseError & {
   arbMessage: Scalars['String']['output'];
   message: Scalars['String']['output'];
 };
+
+export type AddTimeslotInput = {
+  endTime: Scalars['DateTime']['input'];
+  price: Scalars['Int']['input'];
+  stadiumId: Scalars['ID']['input'];
+  startTime: Scalars['DateTime']['input'];
+};
+
+export type AddTimeslotResult = InvalidTimeslotDataError | OwnerAuthorizationError | Timeslot;
 
 export type CreateStadiumInput = {
   cityId?: InputMaybe<Scalars['ID']['input']>;
@@ -269,6 +305,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
   OwnerAuthResult: ( AuthError ) | ( OwnerAuthPayload );
   UserAuthResult: ( AuthError ) | ( UserAuthPayload );
+  addTimeslotResult: ( InvalidTimeslotDataError ) | ( OwnerAuthorizationError ) | ( Timeslot );
   createStadiumResult: ( OwnerAuthorizationError ) | ( Stadium );
   verifyOwnerResult: ( Owner ) | ( OwnerAuthorizationError );
   verifyUserResult: ( User ) | ( UserAuthorizationError );
@@ -276,7 +313,7 @@ export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = {
-  BaseError: ( AuthError ) | ( OwnerAuthorizationError ) | ( UserAuthorizationError );
+  BaseError: ( AuthError ) | ( InvalidTimeslotDataError ) | ( OwnerAuthorizationError ) | ( UserAuthorizationError );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -286,9 +323,11 @@ export type ResolversTypes = {
   BaseError: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['BaseError']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   City: ResolverTypeWrapper<City>;
+  DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  InvalidTimeslotDataError: ResolverTypeWrapper<InvalidTimeslotDataError>;
   Location: ResolverTypeWrapper<Location>;
   Mutation: ResolverTypeWrapper<{}>;
   Owner: ResolverTypeWrapper<Owner>;
@@ -299,10 +338,13 @@ export type ResolversTypes = {
   SignupInput: SignupInput;
   Stadium: ResolverTypeWrapper<Stadium>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Timeslot: ResolverTypeWrapper<Timeslot>;
   User: ResolverTypeWrapper<User>;
   UserAuthPayload: ResolverTypeWrapper<UserAuthPayload>;
   UserAuthResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['UserAuthResult']>;
   UserAuthorizationError: ResolverTypeWrapper<UserAuthorizationError>;
+  addTimeslotInput: AddTimeslotInput;
+  addTimeslotResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['addTimeslotResult']>;
   createStadiumInput: CreateStadiumInput;
   createStadiumResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['createStadiumResult']>;
   verifyOwnerResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['verifyOwnerResult']>;
@@ -315,9 +357,11 @@ export type ResolversParentTypes = {
   BaseError: ResolversInterfaceTypes<ResolversParentTypes>['BaseError'];
   Boolean: Scalars['Boolean']['output'];
   City: City;
+  DateTime: Scalars['DateTime']['output'];
   Float: Scalars['Float']['output'];
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
+  InvalidTimeslotDataError: InvalidTimeslotDataError;
   Location: Location;
   Mutation: {};
   Owner: Owner;
@@ -328,10 +372,13 @@ export type ResolversParentTypes = {
   SignupInput: SignupInput;
   Stadium: Stadium;
   String: Scalars['String']['output'];
+  Timeslot: Timeslot;
   User: User;
   UserAuthPayload: UserAuthPayload;
   UserAuthResult: ResolversUnionTypes<ResolversParentTypes>['UserAuthResult'];
   UserAuthorizationError: UserAuthorizationError;
+  addTimeslotInput: AddTimeslotInput;
+  addTimeslotResult: ResolversUnionTypes<ResolversParentTypes>['addTimeslotResult'];
   createStadiumInput: CreateStadiumInput;
   createStadiumResult: ResolversUnionTypes<ResolversParentTypes>['createStadiumResult'];
   verifyOwnerResult: ResolversUnionTypes<ResolversParentTypes>['verifyOwnerResult'];
@@ -346,7 +393,7 @@ export type AuthErrorResolvers<ContextType = BaseContext, ParentType extends Res
 };
 
 export type BaseErrorResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['BaseError'] = ResolversParentTypes['BaseError']> = {
-  __resolveType: TypeResolveFn<'AuthError' | 'OwnerAuthorizationError' | 'UserAuthorizationError', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AuthError' | 'InvalidTimeslotDataError' | 'OwnerAuthorizationError' | 'UserAuthorizationError', ParentType, ContextType>;
   arbMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
@@ -357,6 +404,16 @@ export type CityResolvers<ContextType = BaseContext, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
+  name: 'DateTime';
+}
+
+export type InvalidTimeslotDataErrorResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['InvalidTimeslotDataError'] = ResolversParentTypes['InvalidTimeslotDataError']> = {
+  arbMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type LocationResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
   latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -364,6 +421,7 @@ export type LocationResolvers<ContextType = BaseContext, ParentType extends Reso
 };
 
 export type MutationResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  addTimeslot?: Resolver<ResolversTypes['addTimeslotResult'], ParentType, ContextType, RequireFields<MutationAddTimeslotArgs, 'timeslotData'>>;
   createStadium?: Resolver<ResolversTypes['createStadiumResult'], ParentType, ContextType, RequireFields<MutationCreateStadiumArgs, 'stadiumData'>>;
   ownerLogin?: Resolver<ResolversTypes['OwnerAuthResult'], ParentType, ContextType, RequireFields<MutationOwnerLoginArgs, 'email' | 'password'>>;
   ownerSignup?: Resolver<ResolversTypes['OwnerAuthResult'], ParentType, ContextType, RequireFields<MutationOwnerSignupArgs, 'signupData'>>;
@@ -415,6 +473,16 @@ export type StadiumResolvers<ContextType = BaseContext, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TimeslotResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Timeslot'] = ResolversParentTypes['Timeslot']> = {
+  bookedBy?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  endTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  price?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  stadium?: Resolver<ResolversTypes['Stadium'], ParentType, ContextType>;
+  startTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -438,6 +506,10 @@ export type UserAuthorizationErrorResolvers<ContextType = BaseContext, ParentTyp
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type AddTimeslotResultResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['addTimeslotResult'] = ResolversParentTypes['addTimeslotResult']> = {
+  __resolveType: TypeResolveFn<'InvalidTimeslotDataError' | 'OwnerAuthorizationError' | 'Timeslot', ParentType, ContextType>;
+};
+
 export type CreateStadiumResultResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['createStadiumResult'] = ResolversParentTypes['createStadiumResult']> = {
   __resolveType: TypeResolveFn<'OwnerAuthorizationError' | 'Stadium', ParentType, ContextType>;
 };
@@ -454,18 +526,22 @@ export type Resolvers<ContextType = BaseContext> = {
   AuthError?: AuthErrorResolvers<ContextType>;
   BaseError?: BaseErrorResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
+  DateTime?: GraphQLScalarType;
+  InvalidTimeslotDataError?: InvalidTimeslotDataErrorResolvers<ContextType>;
   Location?: LocationResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
-  Owner: OwnerResolvers<ContextType>;
+  Owner?: OwnerResolvers<ContextType>;
   OwnerAuthPayload?: OwnerAuthPayloadResolvers<ContextType>;
   OwnerAuthResult?: OwnerAuthResultResolvers<ContextType>;
   OwnerAuthorizationError?: OwnerAuthorizationErrorResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
-  Stadium: StadiumResolvers<ContextType>;
+  Stadium?: StadiumResolvers<ContextType>;
+  Timeslot?: TimeslotResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserAuthPayload?: UserAuthPayloadResolvers<ContextType>;
   UserAuthResult?: UserAuthResultResolvers<ContextType>;
   UserAuthorizationError?: UserAuthorizationErrorResolvers<ContextType>;
+  addTimeslotResult?: AddTimeslotResultResolvers<ContextType>;
   createStadiumResult?: CreateStadiumResultResolvers<ContextType>;
   verifyOwnerResult?: VerifyOwnerResultResolvers<ContextType>;
   verifyUserResult?: VerifyUserResultResolvers<ContextType>;
