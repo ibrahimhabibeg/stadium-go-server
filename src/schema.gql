@@ -3,6 +3,7 @@ type Query {
   getStadiums(filter: String, cursor: ID, take: Int): [Stadium!]!
   verifyUser: verifyUserResult!
   verifyOwner: verifyOwnerResult!
+  cities: [City!]!
 }
 type Mutation {
   userLogin(email: String!, password: String!): UserAuthResult!
@@ -85,11 +86,17 @@ type Stadium {
   """
   size: Int
   location: Location
+  city: City
 }
 
 type Location {
   latitude: Float!
   longitude: Float!
+}
+
+type City {
+  id: ID!
+  name: String!
 }
 
 input createStadiumInput{
@@ -99,6 +106,7 @@ input createStadiumInput{
   size: Int
   latitude: Float
   longitude: Float
+  cityId: ID
 }
 
 type OwnerAuthorizationError implements BaseError{

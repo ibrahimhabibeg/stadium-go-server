@@ -41,6 +41,12 @@ export type BaseError = {
   message: Scalars['String']['output'];
 };
 
+export type City = {
+  __typename?: 'City';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type Location = {
   __typename?: 'Location';
   latitude: Scalars['Float']['output'];
@@ -114,6 +120,7 @@ export type OwnerAuthorizationError = BaseError & {
 
 export type Query = {
   __typename?: 'Query';
+  cities: Array<City>;
   getStadium: Stadium;
   getStadiums: Array<Stadium>;
   verifyOwner: VerifyOwnerResult;
@@ -140,6 +147,7 @@ export type SignupInput = {
 
 export type Stadium = {
   __typename?: 'Stadium';
+  city?: Maybe<City>;
   /** The number of stadiums of the same properties the owner has. */
   count: Scalars['Int']['output'];
   /** Description for the stadium. */
@@ -175,6 +183,7 @@ export type UserAuthorizationError = BaseError & {
 };
 
 export type CreateStadiumInput = {
+  cityId?: InputMaybe<Scalars['ID']['input']>;
   count?: InputMaybe<Scalars['Int']['input']>;
   desc?: InputMaybe<Scalars['String']['input']>;
   latitude?: InputMaybe<Scalars['Float']['input']>;
@@ -276,6 +285,7 @@ export type ResolversTypes = {
   AuthField: AuthField;
   BaseError: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['BaseError']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  City: ResolverTypeWrapper<City>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
@@ -304,6 +314,7 @@ export type ResolversParentTypes = {
   AuthError: AuthError;
   BaseError: ResolversInterfaceTypes<ResolversParentTypes>['BaseError'];
   Boolean: Scalars['Boolean']['output'];
+  City: City;
   Float: Scalars['Float']['output'];
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
@@ -338,6 +349,12 @@ export type BaseErrorResolvers<ContextType = BaseContext, ParentType extends Res
   __resolveType: TypeResolveFn<'AuthError' | 'OwnerAuthorizationError' | 'UserAuthorizationError', ParentType, ContextType>;
   arbMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type CityResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['City'] = ResolversParentTypes['City']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type LocationResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
@@ -379,6 +396,7 @@ export type OwnerAuthorizationErrorResolvers<ContextType = BaseContext, ParentTy
 };
 
 export type QueryResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType>;
   getStadium?: Resolver<ResolversTypes['Stadium'], ParentType, ContextType, RequireFields<QueryGetStadiumArgs, 'stadiumId'>>;
   getStadiums?: Resolver<Array<ResolversTypes['Stadium']>, ParentType, ContextType, Partial<QueryGetStadiumsArgs>>;
   verifyOwner?: Resolver<ResolversTypes['verifyOwnerResult'], ParentType, ContextType>;
@@ -386,12 +404,13 @@ export type QueryResolvers<ContextType = BaseContext, ParentType extends Resolve
 };
 
 export type StadiumResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Stadium'] = ResolversParentTypes['Stadium']> = {
+  city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   desc?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  owner: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
   size?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -434,6 +453,7 @@ export type VerifyUserResultResolvers<ContextType = BaseContext, ParentType exte
 export type Resolvers<ContextType = BaseContext> = {
   AuthError?: AuthErrorResolvers<ContextType>;
   BaseError?: BaseErrorResolvers<ContextType>;
+  City: CityResolvers<ContextType>;
   Location?: LocationResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Owner: OwnerResolvers<ContextType>;
