@@ -7,6 +7,7 @@ import { applyMiddleware } from "graphql-middleware";
 import resolvers from "./resolvers";
 import createContext from "./context";
 import authorizationMiddleware from "./middleware/auth";
+import stadiumMiddleware from "./middleware/stadium";
 import { DateTimeTypeDefinition } from "graphql-scalars";
 
 const typeDefs = [
@@ -16,7 +17,8 @@ const typeDefs = [
 
 const schema = applyMiddleware(
   makeExecutableSchema({ typeDefs, resolvers }),
-  authorizationMiddleware
+  authorizationMiddleware,
+  stadiumMiddleware
 );
 
 const server = new ApolloServer<FullContext>({ schema });
