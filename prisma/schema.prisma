@@ -40,6 +40,8 @@ model Stadium {
   Location  Location?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  city      City      @relation(fields: [cityId], references: [id])
+  cityId    Int
 }
 
 model Location {
@@ -48,4 +50,10 @@ model Location {
   longitude Float
   stadium   Stadium @relation(fields: [stadiumId], references: [id])
   stadiumId Int     @unique
+}
+
+model City {
+  id       Int       @id @default(autoincrement())
+  name     String
+  stadiums Stadium[]
 }

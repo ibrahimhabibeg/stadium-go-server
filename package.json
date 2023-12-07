@@ -33,6 +33,9 @@
     "docs": "typedoc",
     "codegen": "graphql-codegen --config codegen.ts"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "author": "",
   "license": "ISC",
   "description": "",
