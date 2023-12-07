@@ -14,6 +14,7 @@ import {
   StadiumResolver,
 } from "./stadiums";
 import { OwnerResolver } from "./users";
+import { citiesResolver } from "./city";
 
 const resolvers: Resolvers = {
   Query: {
@@ -21,6 +22,7 @@ const resolvers: Resolvers = {
     getStadiums: getStadiumsResolver,
     verifyOwner: verifyOwnerResolver,
     verifyUser: verifyUserResolver,
+    cities: citiesResolver,
   },
   Mutation: {
     userSignup: userSignupResolver,
