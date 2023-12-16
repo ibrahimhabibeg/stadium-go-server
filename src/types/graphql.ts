@@ -182,7 +182,8 @@ export type Timeslot = {
   id: Scalars['ID']['output'];
   /** Integer value representing the price for booking the stadium for this timeslot in EGP. */
   price: Scalars['Int']['output'];
-  stadium: Stadium;
+  stadium?: Stadium;
+  stadiumId?: Number
   /** Indicates the beginning of the allocated timeslot. */
   startTime: Scalars['DateTime']['output'];
 };
