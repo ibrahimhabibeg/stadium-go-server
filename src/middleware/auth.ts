@@ -77,6 +77,7 @@ const authorizationMiddleware: IMiddleware = {
   Mutation: {
     createStadium: authorizeOwner,
     addTimeslot: authorizeOwner,
+    bookTimeslot: authorizeUser,
   },
 };
 

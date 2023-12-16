@@ -14,6 +14,7 @@ type Mutation {
   ownerSignup(signupData: SignupInput!): OwnerAuthResult!
   createStadium(stadiumData: createStadiumInput!): createStadiumResult!
   addTimeslot(timeslotData: addTimeslotInput!): addTimeslotResult!
+  bookTimeslot(timeslotId:ID!): bookTimeslotResult!
 }
 type User {
   id: ID!
@@ -155,7 +156,13 @@ type InvalidTimeslotDataError implements BaseError {
   arbMessage: String!
 }
 
+type BookTimeslotError implements BaseError {
+  message: String!
+  arbMessage: String!
+}
+
 union createStadiumResult = Stadium | OwnerAuthorizationError
 union verifyUserResult = User | UserAuthorizationError
 union verifyOwnerResult = Owner | OwnerAuthorizationError
 union addTimeslotResult = Timeslot | OwnerAuthorizationError | InvalidTimeslotDataError
+union bookTimeslotResult = Timeslot | UserAuthorizationError | BookTimeslotError

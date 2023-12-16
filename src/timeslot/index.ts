@@ -7,8 +7,14 @@ import {
   RequireFields,
   MutationAddTimeslotArgs,
   TimeslotResolvers,
+  UserAuthorizationError,
+  BookTimeslotError,
+  MutationBookTimeslotArgs,
 } from "../types/graphql";
-import { StadiumAndOwnerContext } from "../types/context";
+import {
+  StadiumAndOwnerContext,
+  UserIdIncludedContext,
+} from "../types/context";
 
 export const timeslotResolver: TimeslotResolvers = {
   stadium: async ({ stadiumId }, args, { prisma }) => {
@@ -17,6 +23,32 @@ export const timeslotResolver: TimeslotResolvers = {
     });
     return { ...stadium, __typename: "Stadium" };
   },
+  bookedBy: async ({ userId }, args, { prisma }) => {
+    const user = await prisma.user.findUnique({
+      where: { id: Number(userId) },
+    });
+    return { ...user, __typename: "User" };
+  },
+};
+
+export const bookTimeslotResolver: Resolver<
+  ResolverTypeWrapper<BookTimeslotError | UserAuthorizationError | Timeslot>,
+  {},
+  UserIdIncludedContext,
+  RequireFields<MutationBookTimeslotArgs, "timeslotId">
+> = async (root, { timeslotId }, { prisma, userId }) => {
+  const timeslot = await prisma.timeslot.findUnique({
+    where: { id: Number(timeslotId) },
+  });
+  if (!timeslot) return timeslotDoesntExistError;
+  if (timeslot.userId) return timeslotIsBookedPriceError;
+  const currentTime = new Date();
+  if (timeslot.startTime <= currentTime) return pastBookingError;
+  const updatedTimeslot = await prisma.timeslot.update({
+    where: { id: Number(timeslotId) },
+    data: { bookedBy: { connect: { id: userId } } },
+  });
+  return { ...updatedTimeslot, __typename: "Timeslot" };
 };
 
 export const addTimeslotResolver: Resolver<
@@ -91,4 +123,22 @@ const negativePriceError: InvalidTimeslotDataError = {
   __typename: "InvalidTimeslotDataError",
   message: "Price can't be negative.",
   arbMessage: "لا يمكن أن يكون السعر سلبيًا",
+};
+
+const timeslotIsBookedPriceError: BookTimeslotError = {
+  __typename: "BookTimeslotError",
+  message: "Timeslot is already booked.",
+  arbMessage: "تم حجز المهلة الزمنية بالفعل",
+};
+
+const pastBookingError: BookTimeslotError = {
+  __typename: "BookTimeslotError",
+  message: "The timeslot is in the past",
+  arbMessage: "الفترة الزمنية في الماضي",
+};
+
+const timeslotDoesntExistError: BookTimeslotError = {
+  __typename: "BookTimeslotError",
+  message: "The timeslot doesn't exist",
+  arbMessage: "المهلة الزمنية غير موجودة",
 };

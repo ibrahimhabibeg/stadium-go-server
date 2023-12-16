@@ -15,7 +15,11 @@ import {
 } from "./stadiums";
 import { OwnerResolver } from "./users";
 import { citiesResolver } from "./city";
-import { addTimeslotResolver, timeslotResolver } from "./timeslot";
+import {
+  addTimeslotResolver,
+  bookTimeslotResolver,
+  timeslotResolver,
+} from "./timeslot";
 import { DateTimeResolver } from "graphql-scalars";
 
 const resolvers: Resolvers = {
@@ -34,6 +38,7 @@ const resolvers: Resolvers = {
     ownerLogin: ownerLoginResolver,
     createStadium: createStadiumResolver,
     addTimeslot: addTimeslotResolver,
+    bookTimeslot: bookTimeslotResolver,
   },
   AuthError: {
     __isTypeOf: (root) => root.__typename === "AuthError",
@@ -49,7 +54,7 @@ const resolvers: Resolvers = {
   },
   Owner: OwnerResolver,
   Stadium: StadiumResolver,
-  Timeslot: timeslotResolver
+  Timeslot: timeslotResolver,
 };
 
 export default resolvers;

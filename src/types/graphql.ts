@@ -42,6 +42,12 @@ export type BaseError = {
   message: Scalars['String']['output'];
 };
 
+export type BookTimeslotError = BaseError & {
+  __typename?: 'BookTimeslotError';
+  arbMessage: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+};
+
 export type City = {
   __typename?: 'City';
   id: Scalars['ID']['output'];
@@ -63,6 +69,7 @@ export type Location = {
 export type Mutation = {
   __typename?: 'Mutation';
   addTimeslot: AddTimeslotResult;
+  bookTimeslot: BookTimeslotResult;
   createStadium: CreateStadiumResult;
   ownerLogin: OwnerAuthResult;
   ownerSignup: OwnerAuthResult;
@@ -73,6 +80,11 @@ export type Mutation = {
 
 export type MutationAddTimeslotArgs = {
   timeslotData: AddTimeslotInput;
+};
+
+
+export type MutationBookTimeslotArgs = {
+  timeslotId: Scalars['ID']['input'];
 };
 
 
@@ -177,6 +189,7 @@ export type Timeslot = {
   __typename?: 'Timeslot';
   /** The user who booked the stadium for this timeslot. Null if not booked. */
   bookedBy?: Maybe<User>;
+  userId?: Number
   /** Indicates the end of the allocated timeslot. */
   endTime: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
@@ -218,6 +231,8 @@ export type AddTimeslotInput = {
 };
 
 export type AddTimeslotResult = InvalidTimeslotDataError | OwnerAuthorizationError | Timeslot;
+
+export type BookTimeslotResult = BookTimeslotError | Timeslot | UserAuthorizationError;
 
 export type CreateStadiumInput = {
   cityId?: InputMaybe<Scalars['ID']['input']>;
@@ -307,6 +322,7 @@ export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
   OwnerAuthResult: ( AuthError ) | ( OwnerAuthPayload );
   UserAuthResult: ( AuthError ) | ( UserAuthPayload );
   addTimeslotResult: ( InvalidTimeslotDataError ) | ( OwnerAuthorizationError ) | ( Timeslot );
+  bookTimeslotResult: ( BookTimeslotError ) | ( Timeslot ) | ( UserAuthorizationError );
   createStadiumResult: ( OwnerAuthorizationError ) | ( Stadium );
   verifyOwnerResult: ( Owner ) | ( OwnerAuthorizationError );
   verifyUserResult: ( User ) | ( UserAuthorizationError );
@@ -314,7 +330,7 @@ export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = {
-  BaseError: ( AuthError ) | ( InvalidTimeslotDataError ) | ( OwnerAuthorizationError ) | ( UserAuthorizationError );
+  BaseError: ( AuthError ) | ( BookTimeslotError ) | ( InvalidTimeslotDataError ) | ( OwnerAuthorizationError ) | ( UserAuthorizationError );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -322,6 +338,7 @@ export type ResolversTypes = {
   AuthError: ResolverTypeWrapper<AuthError>;
   AuthField: AuthField;
   BaseError: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['BaseError']>;
+  BookTimeslotError: ResolverTypeWrapper<BookTimeslotError>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   City: ResolverTypeWrapper<City>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
@@ -346,6 +363,7 @@ export type ResolversTypes = {
   UserAuthorizationError: ResolverTypeWrapper<UserAuthorizationError>;
   addTimeslotInput: AddTimeslotInput;
   addTimeslotResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['addTimeslotResult']>;
+  bookTimeslotResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['bookTimeslotResult']>;
   createStadiumInput: CreateStadiumInput;
   createStadiumResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['createStadiumResult']>;
   verifyOwnerResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['verifyOwnerResult']>;
@@ -356,6 +374,7 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   AuthError: AuthError;
   BaseError: ResolversInterfaceTypes<ResolversParentTypes>['BaseError'];
+  BookTimeslotError: BookTimeslotError;
   Boolean: Scalars['Boolean']['output'];
   City: City;
   DateTime: Scalars['DateTime']['output'];
@@ -380,6 +399,7 @@ export type ResolversParentTypes = {
   UserAuthorizationError: UserAuthorizationError;
   addTimeslotInput: AddTimeslotInput;
   addTimeslotResult: ResolversUnionTypes<ResolversParentTypes>['addTimeslotResult'];
+  bookTimeslotResult: ResolversUnionTypes<ResolversParentTypes>['bookTimeslotResult'];
   createStadiumInput: CreateStadiumInput;
   createStadiumResult: ResolversUnionTypes<ResolversParentTypes>['createStadiumResult'];
   verifyOwnerResult: ResolversUnionTypes<ResolversParentTypes>['verifyOwnerResult'];
@@ -394,9 +414,15 @@ export type AuthErrorResolvers<ContextType = BaseContext, ParentType extends Res
 };
 
 export type BaseErrorResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['BaseError'] = ResolversParentTypes['BaseError']> = {
-  __resolveType: TypeResolveFn<'AuthError' | 'InvalidTimeslotDataError' | 'OwnerAuthorizationError' | 'UserAuthorizationError', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AuthError' | 'BookTimeslotError' | 'InvalidTimeslotDataError' | 'OwnerAuthorizationError' | 'UserAuthorizationError', ParentType, ContextType>;
   arbMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type BookTimeslotErrorResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['BookTimeslotError'] = ResolversParentTypes['BookTimeslotError']> = {
+  arbMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CityResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['City'] = ResolversParentTypes['City']> = {
@@ -423,6 +449,7 @@ export type LocationResolvers<ContextType = BaseContext, ParentType extends Reso
 
 export type MutationResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addTimeslot?: Resolver<ResolversTypes['addTimeslotResult'], ParentType, ContextType, RequireFields<MutationAddTimeslotArgs, 'timeslotData'>>;
+  bookTimeslot?: Resolver<ResolversTypes['bookTimeslotResult'], ParentType, ContextType, RequireFields<MutationBookTimeslotArgs, 'timeslotId'>>;
   createStadium?: Resolver<ResolversTypes['createStadiumResult'], ParentType, ContextType, RequireFields<MutationCreateStadiumArgs, 'stadiumData'>>;
   ownerLogin?: Resolver<ResolversTypes['OwnerAuthResult'], ParentType, ContextType, RequireFields<MutationOwnerLoginArgs, 'email' | 'password'>>;
   ownerSignup?: Resolver<ResolversTypes['OwnerAuthResult'], ParentType, ContextType, RequireFields<MutationOwnerSignupArgs, 'signupData'>>;
@@ -511,6 +538,10 @@ export type AddTimeslotResultResolvers<ContextType = BaseContext, ParentType ext
   __resolveType: TypeResolveFn<'InvalidTimeslotDataError' | 'OwnerAuthorizationError' | 'Timeslot', ParentType, ContextType>;
 };
 
+export type BookTimeslotResultResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['bookTimeslotResult'] = ResolversParentTypes['bookTimeslotResult']> = {
+  __resolveType: TypeResolveFn<'BookTimeslotError' | 'Timeslot' | 'UserAuthorizationError', ParentType, ContextType>;
+};
+
 export type CreateStadiumResultResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['createStadiumResult'] = ResolversParentTypes['createStadiumResult']> = {
   __resolveType: TypeResolveFn<'OwnerAuthorizationError' | 'Stadium', ParentType, ContextType>;
 };
@@ -526,6 +557,7 @@ export type VerifyUserResultResolvers<ContextType = BaseContext, ParentType exte
 export type Resolvers<ContextType = BaseContext> = {
   AuthError?: AuthErrorResolvers<ContextType>;
   BaseError?: BaseErrorResolvers<ContextType>;
+  BookTimeslotError?: BookTimeslotErrorResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   InvalidTimeslotDataError?: InvalidTimeslotDataErrorResolvers<ContextType>;
@@ -543,6 +575,7 @@ export type Resolvers<ContextType = BaseContext> = {
   UserAuthResult?: UserAuthResultResolvers<ContextType>;
   UserAuthorizationError?: UserAuthorizationErrorResolvers<ContextType>;
   addTimeslotResult?: AddTimeslotResultResolvers<ContextType>;
+  bookTimeslotResult?: BookTimeslotResultResolvers<ContextType>;
   createStadiumResult?: CreateStadiumResultResolvers<ContextType>;
   verifyOwnerResult?: VerifyOwnerResultResolvers<ContextType>;
   verifyUserResult?: VerifyUserResultResolvers<ContextType>;
