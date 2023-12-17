@@ -203,8 +203,11 @@ export type Timeslot = {
 
 export type User = {
   __typename?: 'User';
+  currentTimeslots?: Array<Timeslot>;
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  previousTimeslots?: Array<Timeslot>;
+  upcomingTimeslots?: Array<Timeslot>;
   username: Scalars['String']['output'];
 };
 
@@ -512,8 +515,11 @@ export type TimeslotResolvers<ContextType = BaseContext, ParentType extends Reso
 };
 
 export type UserResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  currentTimeslots?: Resolver<Array<ResolversTypes['Timeslot']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  previousTimeslots?: Resolver<Array<ResolversTypes['Timeslot']>, ParentType, ContextType>;
+  upcomingTimeslots?: Resolver<Array<ResolversTypes['Timeslot']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

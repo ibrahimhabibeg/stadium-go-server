@@ -13,7 +13,7 @@ import {
   getStadiumsResolver,
   StadiumResolver,
 } from "./stadiums";
-import { OwnerResolver } from "./users";
+import { OwnerResolver, UserResolver } from "./users";
 import { citiesResolver } from "./city";
 import {
   addTimeslotResolver,
@@ -43,9 +43,6 @@ const resolvers: Resolvers = {
   AuthError: {
     __isTypeOf: (root) => root.__typename === "AuthError",
   },
-  User: {
-    __isTypeOf: (root) => root.__typename === "User",
-  },
   OwnerAuthorizationError: {
     __isTypeOf: (root) => root.__typename === "OwnerAuthorizationError",
   },
@@ -55,6 +52,7 @@ const resolvers: Resolvers = {
   Owner: OwnerResolver,
   Stadium: StadiumResolver,
   Timeslot: timeslotResolver,
+  User: UserResolver,
 };
 
 export default resolvers;
