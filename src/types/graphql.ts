@@ -172,6 +172,12 @@ export type SignupInput = {
 
 export type Stadium = {
   __typename?: 'Stadium';
+  /** Timeslots whose beginnig time is in the future and are not booked. */
+  avillableTimeslots?: Array<Timeslot>;
+  /** Timeslots whose beginnig time is in the future and are booked. */
+  bookedTimeslots?: Array<Timeslot>;
+  /** Timeslots whose beginnig time is in the past. */
+  oldTimeslots?: Array<Timeslot>;
   city?: Maybe<City>;
   /** The number of stadiums of the same properties the owner has. */
   count: Scalars['Int']['output'];
@@ -493,12 +499,15 @@ export type QueryResolvers<ContextType = BaseContext, ParentType extends Resolve
 };
 
 export type StadiumResolvers<ContextType = BaseContext, ParentType extends ResolversParentTypes['Stadium'] = ResolversParentTypes['Stadium']> = {
+  avillableTimeslots?: Resolver<Array<ResolversTypes['Timeslot']>, ParentType, ContextType>;
+  bookedTimeslots?: Resolver<Array<ResolversTypes['Timeslot']>, ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   desc?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  oldTimeslots?: Resolver<Array<ResolversTypes['Timeslot']>, ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
   size?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

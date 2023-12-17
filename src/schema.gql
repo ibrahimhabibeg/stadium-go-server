@@ -94,6 +94,18 @@ type Stadium {
   size: Int
   location: Location
   city: City
+  """
+  Timeslots whose beginnig time is in the future and are not booked.
+  """
+  avillableTimeslots: [Timeslot!]!
+  """
+  Timeslots whose beginnig time is in the future and are booked.
+  """
+  bookedTimeslots: [Timeslot!]!
+  """
+  Timeslots whose beginnig time is in the past.
+  """
+  oldTimeslots: [Timeslot!]!
 }
 
 type Location {

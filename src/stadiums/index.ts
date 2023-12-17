@@ -139,4 +139,26 @@ export const StadiumResolver: StadiumResolvers<BaseContext, Stadium> = {
     });
     return stadium.city;
   },
+  avillableTimeslots: async ({ id }, {}, { prisma }) => {
+    const now = new Date();
+    return prisma.timeslot.findMany({
+      where: { stadiumId: Number(id), userId: null, startTime: { gt: now } },
+    });
+  },
+  bookedTimeslots: async ({ id }, {}, { prisma }) => {
+    const now = new Date();
+    return prisma.timeslot.findMany({
+      where: {
+        stadiumId: Number(id),
+        userId: { not: null },
+        startTime: { gt: now },
+      },
+    });
+  },
+  oldTimeslots: async ({ id }, {}, { prisma }) => {
+    const now = new Date();
+    return prisma.timeslot.findMany({
+      where: { stadiumId: Number(id), startTime: { lte: now } },
+    });
+  },
 };
