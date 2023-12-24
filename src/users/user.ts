@@ -16,12 +16,14 @@ export const UserResolver: UserResolvers = {
         startTime: { lte: now },
         endTime: { gte: now },
       },
+      orderBy: { startTime: "asc" },
     });
   },
   previousTimeslots: async ({ id }, args, { prisma }) => {
     const now = new Date();
     return prisma.timeslot.findMany({
       where: { userId: Number(id), endTime: { lt: now } },
+      orderBy: { startTime: "asc" },
     });
   },
 };

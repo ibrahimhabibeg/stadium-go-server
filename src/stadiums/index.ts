@@ -143,6 +143,7 @@ export const StadiumResolver: StadiumResolvers<BaseContext, Stadium> = {
     const now = new Date();
     return prisma.timeslot.findMany({
       where: { stadiumId: Number(id), userId: null, startTime: { gt: now } },
+      orderBy: { startTime: "asc" },
     });
   },
   bookedTimeslots: async ({ id }, {}, { prisma }) => {
@@ -153,12 +154,14 @@ export const StadiumResolver: StadiumResolvers<BaseContext, Stadium> = {
         userId: { not: null },
         startTime: { gt: now },
       },
+      orderBy: { startTime: "asc" },
     });
   },
   oldTimeslots: async ({ id }, {}, { prisma }) => {
     const now = new Date();
     return prisma.timeslot.findMany({
       where: { stadiumId: Number(id), startTime: { lte: now } },
+      orderBy: { startTime: "asc" },
     });
   },
 };
