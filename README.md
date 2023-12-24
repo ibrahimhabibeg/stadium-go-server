@@ -1,5 +1,7 @@
 <div align='center'>
 
+<img src="https://i.imgur.com/7QhRES2.png" alt="logo" />
+
 <h1>Stadium Go</h1>
 <p>Stadium Booking App</p>
 
